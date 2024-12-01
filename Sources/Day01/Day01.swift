@@ -15,10 +15,33 @@ import Common
 
 @main
 struct Day01: Puzzle {
-    // TODO: Start by defining your input/output types :)
-    typealias Input = String
-    typealias OutputPartOne = Never
-    typealias OutputPartTwo = Never
+    typealias Input = Locations
+    typealias OutputPartOne = Int
+    typealias OutputPartTwo = Int
+}
+
+struct Locations: Parsable {
+    static func parse(raw: String) throws -> Locations {
+        var l: [Int] = []
+        var r: [Int] = []
+        for line in raw.components(separatedBy: .newlines) {
+            let numbers = line.components(separatedBy: .whitespaces)
+            l.append(Int(numbers.first!)!)
+            r.append(Int(numbers.last!)!)
+        }
+        return Locations(left: l, right: r)
+
+    }
+    
+    let left, right: [Int]
+
+
+    func solve1() -> Int {
+        zip(left.sorted(), right.sorted())
+            .reduce(into: 0) { r, next in
+                r += abs(next.0 - next.1)
+            }
+    }
 }
 
 // MARK: - PART 1
@@ -26,13 +49,12 @@ struct Day01: Puzzle {
 extension Day01 {
     static var partOneExpectations: [any Expectation<Input, OutputPartOne>] {
         [
-            // TODO: add expectations for part 1
+            assert(expectation: 11, fromRaw: raw)
         ]
     }
 
     static func solvePartOne(_ input: Input) async throws -> OutputPartOne {
-        // TODO: Solve part 1 :)
-        throw ExecutionError.notSolved
+        input.solve1()
     }
 }
 
@@ -41,12 +63,32 @@ extension Day01 {
 extension Day01 {
     static var partTwoExpectations: [any Expectation<Input, OutputPartTwo>] {
         [
-            // TODO: add expectations for part 2
+            assert(expectation: 31, fromRaw: raw2)
         ]
     }
 
     static func solvePartTwo(_ input: Input) async throws -> OutputPartTwo {
-        // TODO: Solve part 2 :)
-        throw ExecutionError.notSolved
+        var res = 0
+        for number in input.left {
+            res += number * input.right.count { $0 == number }
+        }
+        return res
     }
 }
+let raw = """
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+"""
+
+let raw2 = """
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+"""
